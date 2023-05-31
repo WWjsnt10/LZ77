@@ -30,39 +30,13 @@ typedef unsigned short int uint16_t;
 typedef signed int int32_t;
 typedef unsigned int uint32_t;
 
-#define  FASTLZ_USE_MEMMOVE 0
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
-
 /*
  * Give hints to the compiler for branch prediction optimization.
  */
-#if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 2))
-#define FASTLZ_LIKELY(c) (__builtin_expect(!!(c), 1))
-#define FASTLZ_UNLIKELY(c) (__builtin_expect(!!(c), 0))
-#else
+
 #define FASTLZ_LIKELY(c) (c)
 #define FASTLZ_UNLIKELY(c) (c)
-#endif
 
-/*
- * Specialize custom 64-bit implementation for speed improvements.
- */
-#if defined(__x86_64__) || defined(_M_X64) || defined(__aarch64__)
-#define FLZ_ARCH64
-#endif
-
-#undef FLZ_ARCH64
-
-/*
- * Workaround for DJGPP to find uint8_t, uint16_t, etc.
- */
-#if defined(__MSDOS__) && defined(__GNUC__)
-#include <stdint-gcc.h>
-#endif
-
-#if defined(FASTLZ_USE_MEMMOVE) && (FASTLZ_USE_MEMMOVE == 0)
 
 static void fastlz_memmove(uint8_t* dest, const uint8_t* src, uint32_t count) {
   do {
@@ -74,55 +48,7 @@ static void fastlz_memcpy(uint8_t* dest, const uint8_t* src, uint32_t count) {
   return fastlz_memmove(dest, src, count);
 }
 
-#else
 
-#include <string.h>
-
-static void fastlz_memmove(uint8_t* dest, const uint8_t* src, uint32_t count) {
-  if ((count > 4) && (dest >= src + count)) {
-    memmove(dest, src, count);
-  } else {
-    switch (count) {
-      default:
-        do {
-          *dest++ = *src++;
-        } while (--count);
-        break;
-      case 3:
-        *dest++ = *src++;
-      case 2:
-        *dest++ = *src++;
-      case 1:
-        *dest++ = *src++;
-      case 0:
-        break;
-    }
-  }
-}
-
-static void fastlz_memcpy(uint8_t* dest, const uint8_t* src, uint32_t count) { memcpy(dest, src, count); }
-
-#endif
-
-#if defined(FLZ_ARCH64)
-
-static uint32_t flz_readu32(const void* ptr) { return *(const uint32_t*)ptr; }
-
-static uint32_t flz_cmp(const uint8_t* p, const uint8_t* q, const uint8_t* r) {
-  const uint8_t* start = p;
-
-  if (flz_readu32(p) == flz_readu32(q)) {
-    p += 4;
-    q += 4;
-  }
-  while (q < r)
-    if (*p++ != *q++) break;
-  return p - start;
-}
-
-#endif /* FLZ_ARCH64 */
-
-#if !defined(FLZ_ARCH64)
 
 static uint32_t flz_readu32(const void* ptr) {
   const uint8_t* p = (const uint8_t*)ptr;
@@ -136,7 +62,7 @@ static uint32_t flz_cmp(const uint8_t* p, const uint8_t* q, const uint8_t* r) {
   return p - start;
 }
 
-#endif /* !FLZ_ARCH64 */
+
 
 #define MAX_COPY 32
 #define MAX_LEN 264 /* 256 + 8 */
@@ -155,37 +81,12 @@ static uint16_t flz_hash(uint32_t v) {
 
 /* special case of memcpy: at most MAX_COPY bytes */
 static void flz_smallcopy(uint8_t* dest, const uint8_t* src, uint32_t count) {
-#if defined(FLZ_ARCH64)
-  if (count >= 4) {
-    const uint32_t* p = (const uint32_t*)src;
-    uint32_t* q = (uint32_t*)dest;
-    while (count > 4) {
-      *q++ = *p++;
-      count -= 4;
-      dest += 4;
-      src += 4;
-    }
-  }
-#endif
   fastlz_memcpy(dest, src, count);
 }
 
 /* special case of memcpy: exactly MAX_COPY bytes */
 static void flz_maxcopy(void* dest, const void* src) {
-#if defined(FLZ_ARCH64)
-  const uint32_t* p = (const uint32_t*)src;
-  uint32_t* q = (uint32_t*)dest;
-  *q++ = *p++;
-  *q++ = *p++;
-  *q++ = *p++;
-  *q++ = *p++;
-  *q++ = *p++;
-  *q++ = *p++;
-  *q++ = *p++;
-  *q++ = *p++;
-#else
   fastlz_memcpy(dest, src, MAX_COPY);
-#endif
 }
 
 static uint8_t* flz_literals(uint32_t runs, const uint8_t* src, uint8_t* dest) {
@@ -514,4 +415,3 @@ int fastlz_compress_level(int level, const void* input, int length, void* output
   return 0;
 }
 
-#pragma GCC diagnostic pop
