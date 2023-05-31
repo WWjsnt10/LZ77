@@ -32,28 +32,6 @@
 
 #include "fastlz.h"
 
-#undef PATH_SEPARATOR
-
-#if defined(MSDOS) || defined(__MSDOS__) || defined(MSDOS)
-#define PATH_SEPARATOR '\\'
-#endif
-
-#if defined(WIN32) || defined(__NT__) || defined(_WIN32) || defined(__WIN32__)
-#define PATH_SEPARATOR '\\'
-#endif
-
-#ifndef PATH_SEPARATOR
-#define PATH_SEPARATOR '/'
-#endif
-
-#undef SIXPACK_BENCHMARK_WIN32
-#if defined(WIN32) || defined(__NT__) || defined(_WIN32) || defined(__WIN32__)
-#if defined(_MSC_VER) || defined(__GNUC__)
-#define SIXPACK_BENCHMARK_WIN32
-#include <windows.h>
-#endif
-#endif
-
 /* magic identifier for 6pack file */
 static unsigned char sixpack_magic[8] = {137, '6', 'P', 'K', 13, 10, 26, 10};
 
@@ -62,7 +40,7 @@ static unsigned char sixpack_magic[8] = {137, '6', 'P', 'K', 13, 10, 26, 10};
 static unsigned char HandleDataBuffer[MAX_INPUFILE_SIZE];
 static unsigned char CompressDataBuffer[MAX_INPUFILE_SIZE];
 
-#define BLOCK_SIZE                (1 * 1 * 1024)
+#define BLOCK_SIZE                (1024)
 #define BLOCKCHUNK_HEADERSIZE     (16)
 
 #define PATTERN_ID_TOTALHEADER     1
@@ -71,12 +49,6 @@ static unsigned char CompressDataBuffer[MAX_INPUFILE_SIZE];
 #define PATTERN_NOLZ77             0
 #define PATTERN_LZ77_LEVEL1        1
 #define PATTERN_LZ77_LEVEL2        2
-
-
-
-/* prototypes */
-static unsigned long update_adler32(unsigned long checksum, const void* buf, int len);
-void usage(void);
 
 /* for Adler-32 checksum algorithm, see RFC 1950 Section 8.2 */
 #define ADLER32_BASE 65521
@@ -119,66 +91,6 @@ static unsigned long update_adler32(unsigned long checksum, const void* buf, int
   return (s2 << 16) + s1;
 }
 
-void usage(void) {
-  printf("6pack: high-speed file compression tool\n");
-  printf("Copyright (C) Ariya Hidayat\n");
-  printf("\n");
-  printf("Usage: 6pack [options]  input-file  output-file\n");
-  printf("\n");
-  printf("Options:\n");
-  printf("  -1    compress faster\n");
-  printf("  -2    compress better\n");
-  printf("  -v    show program version\n");
-#ifdef SIXPACK_BENCHMARK_WIN32
-  printf("  -mem  check in-memory compression speed\n");
-#endif
-  printf("\n");
-}
-
-/**
- * Do it by Customer
-*/
-static unsigned long Get_InputFileDataStream(const char* input_file,unsigned char* inputbuffer, unsigned long  inbuffer_len)
-{
-  unsigned long filelen = 0;
-  FILE* in = NULL;
-  /* sanity check */
-  in = fopen(input_file, "rb");
-  if (!in) {
-    printf("Error: could not open %s\n", input_file);
-    return -1;
-  }
-
-  /* find size of the file */
-  fseek(in, 0, SEEK_END);
-  filelen = ftell(in);
-  fseek(in, 0, SEEK_SET);
-
-  if(filelen > inbuffer_len)
-  {
-      printf("inputbuffer is small: need %lu\n bytes\n",filelen);
-      return 0;
-  }
-  size_t bytes_read = fread(inputbuffer,1,filelen,in);
-  if(bytes_read != filelen)
-  {
-    fclose(in);
-    printf("file is read error\n");
-    return 0;
-  }
-  fclose(in);
-  return filelen;
-}
-
-/**
- *  Customer need to modify the Function to get the all data
- * 
-*/
-static unsigned long Handle_InputFile(const char* input_file,unsigned char* filebuffer,  unsigned long  inbuffer_len)
-{
-  return Get_InputFileDataStream(input_file,filebuffer,inbuffer_len);
-}
-
 
 void write_chunkheader(int id, int options, unsigned long size, unsigned long checksum, unsigned long extra,unsigned char* outbuffer) 
 {
@@ -201,7 +113,7 @@ void write_chunkheader(int id, int options, unsigned long size, unsigned long ch
   return;
 }
 
-unsigned long LZ77_Init(unsigned long datalen, unsigned char* outbuffer, unsigned long* outlen)
+unsigned long LZ77_CompressDataInit(unsigned long datalen, unsigned char* outbuffer, unsigned long* outlen)
 {
   int i=0;
   if(*outlen >= (sizeof(sixpack_magic) + BLOCKCHUNK_HEADERSIZE))
@@ -265,6 +177,61 @@ unsigned long LZ77_CompressDataBlock(unsigned long bytes_read, const unsigned ch
   return chunk_size+BLOCKCHUNK_HEADERSIZE;
 }
 
+
+
+
+
+
+/********************************************************************************************************************************************/
+
+
+/**
+ * Do it by Customer
+*/
+static unsigned long Get_InputFileDataStream(const char* input_file,unsigned char* inputbuffer, unsigned long  inbuffer_len)
+{
+  unsigned long filelen = 0;
+  FILE* in = NULL;
+  /* sanity check */
+  in = fopen(input_file, "rb");
+  if (!in) {
+    printf("Error: could not open %s\n", input_file);
+    return -1;
+  }
+
+  /* find size of the file */
+  fseek(in, 0, SEEK_END);
+  filelen = ftell(in);
+  fseek(in, 0, SEEK_SET);
+
+  if(filelen > inbuffer_len)
+  {
+      printf("inputbuffer is small: need %lu\n bytes\n",filelen);
+      return 0;
+  }
+  size_t bytes_read = fread(inputbuffer,1,filelen,in);
+  if(bytes_read != filelen)
+  {
+    fclose(in);
+    printf("file is read error\n");
+    return 0;
+  }
+  fclose(in);
+  return filelen;
+}
+
+/**
+ *  Customer need to modify the Function to get the all data
+ * 
+*/
+static unsigned long Handle_InputFile(const char* input_file,unsigned char* filebuffer,  unsigned long  inbuffer_len)
+{
+  return Get_InputFileDataStream(input_file,filebuffer,inbuffer_len);
+}
+
+
+
+
 unsigned long CompressTotalBuffer(unsigned char* inbuffer, unsigned long inbufferlen, unsigned char* outbuffer, unsigned long* outbufferlen,int level)
 {
 #ifdef DEBUG
@@ -273,7 +240,7 @@ unsigned long CompressTotalBuffer(unsigned char* inbuffer, unsigned long inbuffe
     unsigned long totaloutdatabufferlen = *outbufferlen;
     unsigned char headerbuffer[24];
     unsigned long headerbufferlen = 24;
-    unsigned long retlen = LZ77_Init(inbufferlen,headerbuffer,&headerbufferlen);
+    unsigned long retlen = LZ77_CompressDataInit(inbufferlen,headerbuffer,&headerbufferlen);
     int i=0;
     for(i=0; i<retlen; i++)
     {
@@ -331,7 +298,21 @@ unsigned long CompressTotalBuffer(unsigned char* inbuffer, unsigned long inbuffe
     return remaining;
 }
 
-
+void usage(void) {
+  printf("6pack: high-speed file compression tool\n");
+  printf("Copyright (C) Ariya Hidayat\n");
+  printf("\n");
+  printf("Usage: 6pack [options]  input-file  output-file\n");
+  printf("\n");
+  printf("Options:\n");
+  printf("  -1    compress faster\n");
+  printf("  -2    compress better\n");
+  printf("  -v    show program version\n");
+#ifdef SIXPACK_BENCHMARK_WIN32
+  printf("  -mem  check in-memory compression speed\n");
+#endif
+  printf("\n");
+}
 
 
 int main(int argc, char** argv) {
@@ -435,6 +416,7 @@ int main(int argc, char** argv) {
   }
 
   unsigned long infilebytes = Handle_InputFile(input_file,HandleDataBuffer,MAX_INPUFILE_SIZE);
+  printf("inpufilelen :%ld\n",infilebytes);
   for(i = 0;i<infilebytes;i++)
   {
       if(i%16 == 0)

@@ -48,13 +48,6 @@ static unsigned char sixpack_magic[8] = {137, '6', 'P', 'K', 13, 10, 26, 10};
 
 static unsigned char Decompress_TestResultBuffer[BLOCK_SIZE];
 
-/* prototypes */
-static unsigned long update_adler32(unsigned long checksum, const void* buf, int len);
-void usage(void);
-
-static unsigned long readU16(const unsigned char* ptr);
-static unsigned long readU32(const unsigned char* ptr);
-
 
 /* for Adler-32 checksum algorithm, see RFC 1950 Section 8.2 */
 #define ADLER32_BASE 65521
@@ -97,14 +90,6 @@ static unsigned long update_adler32(unsigned long checksum, const void* buf, int
   return (s2 << 16) + s1;
 }
 
-void usage(void) {
-  printf("6unpack: uncompress 6pack archive\n");
-  printf("Copyright (C) Ariya Hidayat\n");
-  printf("\n");
-  printf("Usage: 6unpack archive-file\n");
-  printf("\n");
-}
-
 static unsigned long readU16(const unsigned char* ptr) { return ptr[0] + (ptr[1] << 8); }
 
 static unsigned long readU32(const unsigned char* ptr) {
@@ -112,7 +97,8 @@ static unsigned long readU32(const unsigned char* ptr) {
 }
 
 void read_chunkheader(unsigned char* headerbuffer, int* id, int* options, unsigned long* size, unsigned long* checksum,
-                       unsigned long* extra) {
+                       unsigned long* extra) 
+{
   unsigned char buffer[BLOCKCHUNK_HEADERSIZE];
   int i=0;
   for(i=0; i<BLOCKCHUNK_HEADERSIZE; i++)
@@ -305,6 +291,14 @@ unsigned long Decompress_TotalDataBlock(unsigned char* inbuffer,unsigned long in
       return 0x0;
     }
     return 0x01;
+}
+
+void usage(void) {
+  printf("6unpack: uncompress 6pack archive\n");
+  printf("Copyright (C) Ariya Hidayat\n");
+  printf("\n");
+  printf("Usage: 6unpack archive-file\n");
+  printf("\n");
 }
 
 int main(int argc, char** argv) {
