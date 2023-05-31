@@ -1,0 +1,24 @@
+RAW Data        ->    Data that is not compressed
+RAW Data Block  ->    divide raw data into several data block
+Raw Data length 
+Raw Data Block length
+Compressed Data  ->    Data that is compressed
+Compressed DataBlock   ->  divide Compress Data into several data block
+Compressed Data length 
+Compressed Data Block length
+
+
+The Compressed Data Flow Struct:
+[ 8 Bytes Special Pattern ]    
+[ 2 Bytes Compressed Data Header: 0x01 ] [ 2 Bytes Header Options:0x00 ] 
+[ 4 bytes Raw Data length ] 
+[ 4 bytes checksum = checksum(special pattern -> Raw data length) ] 
+[ 4 bytes extra info ]
+
+Compressed Data Block 1....N:
+[ 2 Bytes Compressed Data Header: 0x11 ] [ 2 Bytes Header Options: it means compressed level for LZ77 ] 
+[ 4 bytes Compress Block Data length ] 
+[ 4 bytes checksum = checksum(Compress Block Data) ] 
+[ 4 bytes extra info = Raw Data Block length ]
+[ Compress Block Data ]
+
