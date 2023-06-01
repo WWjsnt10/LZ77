@@ -38,6 +38,19 @@ typedef unsigned int uint32_t;
 #define FASTLZ_UNLIKELY(c) (c)
 
 
+#define MAX_COPY 32
+#define MAX_LEN 264 /* 256 + 8 */
+#define MAX_L1_DISTANCE 8192
+#define MAX_L2_DISTANCE 8191
+#define MAX_FARDISTANCE (65535 + MAX_L2_DISTANCE - 1)
+
+#define HASH_LOG 13
+#define HASH_SIZE (1 << HASH_LOG)
+#define HASH_MASK (HASH_SIZE - 1)
+
+static uint32_t htab[HASH_SIZE];
+
+
 static void fastlz_memmove(uint8_t* dest, const uint8_t* src, uint32_t count) {
   do {
     *dest++ = *src++;
@@ -61,18 +74,6 @@ static uint32_t flz_cmp(const uint8_t* p, const uint8_t* q, const uint8_t* r) {
     if (*p++ != *q++) break;
   return p - start;
 }
-
-
-
-#define MAX_COPY 32
-#define MAX_LEN 264 /* 256 + 8 */
-#define MAX_L1_DISTANCE 8192
-#define MAX_L2_DISTANCE 8191
-#define MAX_FARDISTANCE (65535 + MAX_L2_DISTANCE - 1)
-
-#define HASH_LOG 13
-#define HASH_SIZE (1 << HASH_LOG)
-#define HASH_MASK (HASH_SIZE - 1)
 
 static uint16_t flz_hash(uint32_t v) {
   uint32_t h = (v * 2654435769LL) >> (32 - HASH_LOG);
@@ -135,7 +136,7 @@ int fastlz1_compress(const void* input, int length, void* output) {
   const uint8_t* ip_limit = ip + length - 12 - 1;
   uint8_t* op = (uint8_t*)output;
 
-  uint32_t htab[HASH_SIZE];
+  /*uint32_t htab[HASH_SIZE];*/
   uint32_t seq, hash;
 
   /* initializes hash table */
@@ -269,7 +270,7 @@ int fastlz2_compress(const void* input, int length, void* output) {
   const uint8_t* ip_limit = ip + length - 12 - 1;
   uint8_t* op = (uint8_t*)output;
 
-  uint32_t htab[HASH_SIZE];
+  /*uint32_t htab[HASH_SIZE];*/
   uint32_t seq, hash;
 
   /* initializes hash table */
