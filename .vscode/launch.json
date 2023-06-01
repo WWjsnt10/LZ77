@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/exampleDataStream/6pack",
+            "program": "${workspaceFolder}/exampleDataStream/6unpack",
             "args": ["MCU.hex"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
