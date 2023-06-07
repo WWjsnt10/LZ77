@@ -10,3 +10,17 @@ header: sm4_lcl.h ; endian.h ; sm4.h;
 Src:    sm4_common.c ; sm4_enc.c ;  sm4_setkey.c ;
 
 
+
+sm4_cbc_decrypt_init
+sm4_cbc_decrypt_update
+sm4_cbc_decrypt_finish
+
+sm4_cbc_encrypt_init
+sm4_cbc_encrypt_update
+sm4_cbc_encrypt_finish
+
+sm4_cbc_padding_decrypt
+
+gcc demo_sm4_cbc_decrypt_update.c ../../GMSSL/SM4/sm4_common.c ../../GMSSL/SM4/sm4_enc.c ../../GMSSL/SM4/sm4_setkey.c ../../GMSSL/SM4/sm4_modes.c ../../GMSSL/debug.c ../../GMSSL/hex.c ../../GMSSL/gcm.c ../../GMSSL/gf128.c ../../GMSSL/block_cipher.c ../../GMSSL/aes.c ../../GMSSL/aes_modes.c  -I ../../GMSSL/SM4  -I ../../include  -o demo_sm4
+
+

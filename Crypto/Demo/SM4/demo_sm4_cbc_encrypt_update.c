@@ -34,18 +34,34 @@ int main(void)
 		fprintf(stderr, "%s %d: error\n", __FILE__, __LINE__);
 		return 1;
 	}
-	while ((inlen = fread(inbuf, 1, sizeof(inbuf), stdin)) > 0) {
+
+	for(int i=0;i<32;i++)
+	{
+		inbuf[i] = 0x01+i;
+	}
+	inlen = 32;
+	if(inlen > 0) {
 		if (sm4_cbc_encrypt_update(&cbc_ctx, inbuf, inlen, outbuf, &outlen) != 1) {
 			fprintf(stderr, "%s %d: error\n", __FILE__, __LINE__);
 			return 1;
 		}
-		fwrite(outbuf, 1, outlen, stdout);
+		//fwrite(outbuf, 1, outlen, stdout);
+		for(int i=0;i<outlen;i++)
+		{
+			printf("0x%02X,",outbuf[i]);
+		}
+		printf("\n");
 	}
 	if (sm4_cbc_encrypt_finish(&cbc_ctx, outbuf, &outlen) != 1) {
 		fprintf(stderr, "%s %d: error\n", __FILE__, __LINE__);
 		return 1;
 	}
-	fwrite(outbuf, 1, outlen, stdout);
+	//fwrite(outbuf, 1, outlen, stdout);
+
+	for(int i=0;i<outlen;i++)
+	{
+		printf("0x%02X,",outbuf[i]);
+	}
 
 	return 0;
 }

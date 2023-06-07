@@ -11,7 +11,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <gmssl/sm4.h>
-#include <gmssl/rand.h>
+//#include <gmssl/rand.h>
 
 
 int main(void)
@@ -29,9 +29,14 @@ int main(void)
 	unsigned char pbuf[32] = {0};
 	int i;
 
-	rand_bytes(key, sizeof(key));
-	rand_bytes(iv, sizeof(iv));
-
+	//rand_bytes(key, sizeof(key));
+	//rand_bytes(iv, sizeof(iv));
+	for(int i=0;i<16;i++)
+	{
+		key[i] = i;
+		iv[i]  = i;
+	}
+	
 	printf("key: ");
 	for (i = 0; i < sizeof(key); i++) {
 		printf("%02X", key[i]);
