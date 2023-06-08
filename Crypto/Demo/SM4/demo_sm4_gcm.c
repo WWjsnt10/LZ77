@@ -11,7 +11,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <gmssl/sm4.h>
-#include <gmssl/rand.h>
+//#include <gmssl/rand.h>
 
 
 int main(void)
@@ -30,8 +30,8 @@ int main(void)
 	unsigned char tag[16];
 	int i;
 
-	rand_bytes(key, sizeof(key));
-	rand_bytes(iv, sizeof(iv));
+	//rand_bytes(key, sizeof(key));
+	//rand_bytes(iv, sizeof(iv));
 
 	printf("key: ");
 	for (i = 0; i < sizeof(key); i++) {

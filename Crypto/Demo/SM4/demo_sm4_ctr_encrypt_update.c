@@ -34,18 +34,27 @@ int main(void)
 		fprintf(stderr, "%s %d: error\n", __FILE__, __LINE__);
 		return 1;
 	}
-	while ((inlen = fread(inbuf, 1, sizeof(inbuf), stdin)) > 0) {
+	if ((inlen = fread(inbuf, 1, 32, stdin)) > 0) {
 		if (sm4_ctr_encrypt_update(&cbc_ctx, inbuf, inlen, outbuf, &outlen) != 1) {
 			fprintf(stderr, "%s %d: error\n", __FILE__, __LINE__);
 			return 1;
 		}
-		fwrite(outbuf, 1, outlen, stdout);
+		//fwrite(outbuf, 1, outlen, stdout);
+		for(int i=0;i<outlen;i++)
+		{
+			printf("0x%02X,",outbuf[i]);
+		}
+		printf("\n");
 	}
 	if (sm4_ctr_encrypt_finish(&cbc_ctx, outbuf, &outlen) != 1) {
 		fprintf(stderr, "%s %d: error\n", __FILE__, __LINE__);
 		return 1;
 	}
-	fwrite(outbuf, 1, outlen, stdout);
+	//fwrite(outbuf, 1, outlen, stdout);
+	for(int i=0;i<outlen;i++)
+	{
+		printf("0x%02X,",outbuf[i]);
+	}
 
 	return 0;
 }
