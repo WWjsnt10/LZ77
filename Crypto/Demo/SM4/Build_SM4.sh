@@ -1,0 +1,1 @@
+gcc demo_sm4_gcm.c ../../GMSSL/SM4/sm4_common.c ../../GMSSL/SM4/sm4_enc.c ../../GMSSL/SM4/sm4_setkey.c ../../GMSSL/SM4/sm4_modes.c ../../GMSSL/debug.c ../../GMSSL/hex.c ../../GMSSL/gcm.c ../../GMSSL/gf128.c ../../GMSSL/block_cipher.c ../../GMSSL/aes.c ../../GMSSL/aes_modes.c  -I ../../GMSSL/SM4  -I ../../include  -o demo_sm4 -g

@@ -8,10 +8,8 @@
  */
 
 
-#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <gmssl/mem.h>
 #include <gmssl/gf128.h>
 #include <gmssl/gcm.h>
@@ -112,7 +110,7 @@ void ghash_update(GHASH_CTX *ctx, const uint8_t *c, size_t clen)
 {
 	gf128_t C;
 
-	assert(ctx->num < 16);
+	//assert(ctx->num < 16);
 
 	ctx->clen += clen;
 

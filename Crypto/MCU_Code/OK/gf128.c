@@ -60,6 +60,7 @@ void gf128_print_bits(gf128_t a)
 	printf("\n");
 }
 
+#if 0
 int gf128_print(FILE *fp, int fmt, int ind, const char *label, gf128_t a)
 {
 	uint8_t be[16];
@@ -73,7 +74,7 @@ int gf128_print(FILE *fp, int fmt, int ind, const char *label, gf128_t a)
 	printf("\n");
 	return 1;
 }
-
+#endif
 static uint64_t reverse_bits(uint64_t a)
 {
 	uint64_t r = 0;

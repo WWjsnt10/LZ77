@@ -227,6 +227,11 @@ int mem_is_zero(const uint8_t *buf, size_t len)
 	return ret;
 }
 
+int rand_bytes(uint8_t *buf, size_t buflen)
+{
+    return 0;
+}
+
 
 
 
