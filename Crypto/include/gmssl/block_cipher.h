@@ -14,7 +14,6 @@
 #define GMSSL_BLOCK_CIPHER_H
 
 
-#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <gmssl/aes.h>
