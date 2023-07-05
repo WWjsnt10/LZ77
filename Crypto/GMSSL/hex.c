@@ -229,7 +229,11 @@ int mem_is_zero(const uint8_t *buf, size_t len)
 
 int rand_bytes(uint8_t *buf, size_t buflen)
 {
-    return 0;
+    for(size_t i = 0;i<buflen;i++)
+    {
+        buf[i] = 0x01 + i;
+    }
+    return 1;
 }
 
 

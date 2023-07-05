@@ -45,7 +45,7 @@ int gf128_equ_hex(gf128_t a, const char *s)
 	gf128_to_bytes(a, bin2);
 	return memcmp(bin1, bin2, sizeof(bin1)) == 0;
 }
-
+#if 0
 void gf128_print_bits(gf128_t a)
 {
 	int i;
@@ -60,7 +60,7 @@ void gf128_print_bits(gf128_t a)
 	printf("\n");
 }
 
-#if 0
+
 int gf128_print(FILE *fp, int fmt, int ind, const char *label, gf128_t a)
 {
 	uint8_t be[16];

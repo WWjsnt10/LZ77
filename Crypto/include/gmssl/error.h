@@ -12,12 +12,11 @@
 #ifndef GMSSL_ERROR_H
 #define GMSSL_ERROR_H
 
-#if 0
+
 #include <stdio.h>
-#include <stdarg.h>
 #include <string.h>
 #include <stdint.h>
-#endif
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,8 +34,14 @@ extern "C" {
 #define error_puts(str) \
             do {} while (0)
 
-#define assert() \
+#define assert(a) \
     do{}while(0)
+
+int format_print(FILE *fp, int format, int indent, const char *str, ...);
+int format_bytes(FILE *fp, int format, int indent, const char *str, const uint8_t *data, size_t datalen);
+int format_string(FILE *fp, int format, int indent, const char *str, const uint8_t *data, size_t datalen);
+
+
 
 #if 0
 #define GMSSL_FMT_BIN	1

@@ -1,0 +1,11 @@
+sm3 Integration Explaination:
+
+header: SM2.h
+
+SM2 dependent on:
+ans1, pem, base64, pbkdf2(hmac,digest, sha2) , pkcs8, x509_alg,  ec  sm3, sm4
+
+
+gcc demo_sm3.c ../../GMSSL/SM3/sm3.c ../../GMSSL/SM3/sm3_hmac.c ../../GMSSL/SM3/sm3_kdf.c ../../GMSSL/debug.c  -I ../../GMSSL/SM3  -I ../../include  -o demo_sm3
+
+
