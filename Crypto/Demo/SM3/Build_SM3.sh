@@ -1,0 +1,1 @@
+gcc demo_sm3_hmac.c ../../GMSSL/SM3/sm3.c ../../GMSSL/SM3/sm3_hmac.c ../../GMSSL/SM3/sm3_kdf.c ../../GMSSL/debug.c  -I ../../GMSSL/SM3  -I ../../include  -o demo_sm3 -g
