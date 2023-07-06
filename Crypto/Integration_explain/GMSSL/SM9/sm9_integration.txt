@@ -1,0 +1,8 @@
+sm3 Integration Explaination:
+
+header: SM9.h
+
+SM9 dependent on:
+ans1, pem, base64, pbkdf2(hmac,digest, sha2) , pkcs8, x509_alg,  ec , sm2,  sm3, sm4
+
+
